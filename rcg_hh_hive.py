@@ -10,7 +10,6 @@ import pyspark.sql.functions as F
 cur_date = (datetime.now()).strftime('%Y-%m-%d')
 cur_time = (datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
 
-# Create spark session with hive enabled
 spark = SparkSession \
     .builder \
     .appName("SparkByExamples.com") \
@@ -28,7 +27,7 @@ spark.read.parquet('file:///home/hdoop/datayunita/SAUsageOCS/HH/*/*/*').write.mo
 start_date = datetime.now() + timedelta(hours=7)
 run_date = datetime.now().strftime('%Y%m%d%H%M%S')
 
-# READ DATA SA_USAGE_OCS_RCGm
+# READ DATA SA_USAGE_OCS_RCG
 df_RCG = hv.table("base.source_rcg_hh")\
                 .withColumn('trx', lit("1"))\
                 .withColumn('event_date', lit("2023-02-22"))\
