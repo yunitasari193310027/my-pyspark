@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.context import HiveContext
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
+from datetime import datetime, timedelta
 import pyspark.sql.functions as F
 
 # Create spark session with hive enabled
@@ -63,7 +64,7 @@ end_date = datetime.today() + timedelta(hours=7)
 duration = (end_date - start_date)
 
 # CREATE FILELOG
-app = "rcg_hive"
+app = "payj1_hive"
 nama_file = "/home/hdoop/BelajarPyspark/"+app+"_"+run_date+".log"
 f = open(nama_file, "w")
 f.writelines('\nSTART_DATE={}'.format(start_date.strftime('%Y-%m-%d %H:%M:%S')))
