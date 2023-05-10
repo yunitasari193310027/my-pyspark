@@ -48,7 +48,7 @@ PAYJ_Part2 = dfPAYJ1.join(df_MTD,col('subs_id') == col('subs_id_mtd'), how = 'le
                             .otherwise(F.col('trx_lacci')))\
                     .join(df_MM,col('subs_id') == col('subs_id_mm'), how = 'left')\
                     .withColumn('trx_lacci', 
-                        F.when((F.col('trx_lacci').isNull()) & (F.col('subs_id') == F.col('subs_id_mm')), F.col('lacci_id_mm'))
+                        F.when((F.col('trx_lacci').isNull()) & (F.col('subs_id') == F.col('subs_id_mm')), F.col('lacci_id_mm'))
                             .otherwise(F.col('trx_lacci')))\
                     .withColumn('find_flag', 
                         F.when((F.col('subs_id') == F.col('subs_id_mtd')) & (F.col('lacci_id_mtd') == F.col('trx_lacci')), '1#')
@@ -60,18 +60,18 @@ PAYJ_Part2 = dfPAYJ1.join(df_MTD,col('subs_id') == col('subs_id_mtd'), how = 'le
                     .withColumn('Flag',when(col('trx_lacci') == col('lacci_id_laccima'),'SAME').otherwise('DIFF'))
 
 # SPLIT FILTER
-df_goodLACCI  = data_flagLACCI.filter(col('Flag')  == 'SAME')\
+df_goodLACCI = PAYJ_Part2.filter(col('Flag') == 'SAME')\
                     .select('activation_timestamp','trx_date','trx_hour','msisdn','bss_order_id','plan_id','plan_name','topping_id','topping_name','plan_price','payment_timestamp','offer_id','payment_channel','cell_id','indicator_4g','future_string_1','future_string_2','future_string_3','brand','site_name','pre_post_flag','event_date','future_string_4','future_string_5','future_string_6','future_string_7','future_string_8','future_string_9','future_string_10','filename','trx_lacci','subs_id','cust_type_desc','cust_subtype_desc','retry_count','lacci_id_laccima','eci','cgi_post','area_name','lac','ci','node_type','region_sales','branch','subbranch','cluster_sales','provinsi','kabupaten','kecamatan','kelurahan','find_flag') 
 
-df_rejectLACCI = data_flagLACCI.filter(col('Flag') == 'DIFF')\
+df_rejectLACCI = PAYJ_Part2.filter(col('Flag') == 'DIFF')\
                     .select('activation_timestamp','trx_date','trx_hour','msisdn','bss_order_id','plan_id','plan_name','topping_id','topping_name','plan_price','payment_timestamp','offer_id','payment_channel','cell_id','indicator_4g','future_string_1','future_string_2','future_string_3','brand','site_name','pre_post_flag','event_date','future_string_4','future_string_5','future_string_6','future_string_7','future_string_8','future_string_9','future_string_10','filename','trx_lacci','subs_id','cust_type_desc','cust_subtype_desc','retry_count','find_flag')\
                     .join(df_LACCIMA.dropDuplicates(['eci']),col('trx_lacci') == col('eci'), how = 'left')\
                     .select('activation_timestamp','trx_date','trx_hour','msisdn','bss_order_id','plan_id','plan_name','topping_id','topping_name','plan_price','payment_timestamp','offer_id','payment_channel','cell_id','indicator_4g','future_string_1','future_string_2','future_string_3','brand','site_name','pre_post_flag','event_date','future_string_4','future_string_5','future_string_6','future_string_7','future_string_8','future_string_9','future_string_10','filename','trx_lacci','subs_id','cust_type_desc','cust_subtype_desc','retry_count','lacci_id_laccima','eci','cgi_post','area_name','lac','ci','node_type','region_sales','branch','subbranch','cluster_sales','provinsi','kabupaten','kecamatan','kelurahan','find_flag')\
                     .withColumn('Flag',when(col('trx_lacci') == col('eci'),'SAME').otherwise('DIFF'))
 # SPLIT FILTER
-df_goodECI = data_flagECI.filter(col('Flag')  == 'SAME')\
+df_goodECI = df_rejectLACCI.filter(col('Flag') == 'SAME')\
                 .select('activation_timestamp','trx_date','trx_hour','msisdn','bss_order_id','plan_id','plan_name','topping_id','topping_name','plan_price','payment_timestamp','offer_id','payment_channel','cell_id','indicator_4g','future_string_1','future_string_2','future_string_3','brand','site_name','pre_post_flag','event_date','future_string_4','future_string_5','future_string_6','future_string_7','future_string_8','future_string_9','future_string_10','filename','trx_lacci','subs_id','cust_type_desc','cust_subtype_desc','retry_count','lacci_id_laccima','eci','cgi_post','area_name','lac','ci','node_type','region_sales','branch','subbranch','cluster_sales','provinsi','kabupaten','kecamatan','kelurahan','find_flag')
-df_rejectECI = data_flagECI.filter(col('Flag') == 'DIFF')\
+df_rejectECI = df_rejectLACCI.filter(col('Flag') == 'DIFF')\
                 .select('activation_timestamp','trx_date','trx_hour','msisdn','bss_order_id','plan_id','plan_name','topping_id','topping_name','plan_price','payment_timestamp','offer_id','payment_channel','cell_id','indicator_4g','future_string_1','future_string_2','future_string_3','brand','site_name','pre_post_flag','event_date','future_string_4','future_string_5','future_string_6','future_string_7','future_string_8','future_string_9','future_string_10','filename','trx_lacci','subs_id','cust_type_desc','cust_subtype_desc','retry_count','find_flag')\
                 .join(df_LACCIMA.dropDuplicates(['cgi_post']),col('trx_lacci') == col('cgi_post'), how = 'left')\
                 .select('activation_timestamp','trx_date','trx_hour','msisdn','bss_order_id','plan_id','plan_name','topping_id','topping_name','plan_price','payment_timestamp','offer_id','payment_channel','cell_id','indicator_4g','future_string_1','future_string_2','future_string_3','brand','site_name','pre_post_flag','event_date','future_string_4','future_string_5','future_string_6','future_string_7','future_string_8','future_string_9','future_string_10','filename','trx_lacci','subs_id','cust_type_desc','cust_subtype_desc','retry_count','lacci_id_laccima','eci','cgi_post','area_name','lac','ci','node_type','region_sales','branch','subbranch','cluster_sales','provinsi','kabupaten','kecamatan','kelurahan','find_flag')
@@ -96,11 +96,11 @@ df_statusREJECT = reduce(DataFrame.unionAll, df)\
                 .withColumn("file_id", lit("")).withColumn("load_ts", lit(cur_time)).withColumn("load_user", lit('solusi247'))\
                 .select('activation_timestamp','trx_date','trx_hour','msisdn','subs_id','cust_type_desc','cust_subtype_desc','bss_order_id','plan_id','plan_name','topping_id','topping_name','plan_price','payment_timestamp','offer_id','l4_name','l3_name','l2_name','l1_name','payment_channel','cell_id','lacci_id','lacci_closing_flag','lac','ci','node_type','area_name','region_sales','branch','subbranch','cluster_sales','provinsi','kabupaten','kecamatan','kelurahan','indicator_4g','future_string_1','future_string_2','future_string_3','brand','site_name','file_id','load_ts','load_user','pre_post_flag','event_date','future_string_4','future_string_5','future_string_6','future_string_7','future_string_8','future_string_9','future_string_10','filename','trx_lacci','lacci_id_flag','retry_count')\
                 .withColumn('status_reject', F.when((F.coalesce('subs_id','cust_type_desc','cust_subtype_desc','l4_name','l3_name','l2_name','l1_name','lacci_id','lacci_closing_flag','lac','ci','node_type','area_name','region_sales','branch','subbranch','cluster_sales','provinsi','kabupaten','kecamatan','kelurahan').isNull())\
-                                                                         | ((F.coalesce('subs_id','cust_type_desc','cust_subtype_desc','l4_name','l3_name','l2_name','l1_name','lacci_id','lacci_closing_flag','lac','ci','node_type','area_name','region_sales','branch','subbranch','cluster_sales','provinsi','kabupaten','kecamatan','kelurahan') == "NQ"))\
-                                                                            | ((F.coalesce('subs_id','cust_type_desc','cust_subtype_desc','l4_name','l3_name','l2_name','l1_name','lacci_id','lacci_closing_flag','lac','ci','node_type','area_name','region_sales','branch','subbranch','cluster_sales','provinsi','kabupaten','kecamatan','kelurahan') == "-99")), 'YES').otherwise('NO'))
+                                                | ((F.coalesce('subs_id','cust_type_desc','cust_subtype_desc','l4_name','l3_name','l2_name','l1_name','lacci_id','lacci_closing_flag','lac','ci','node_type','area_name','region_sales','branch','subbranch','cluster_sales','provinsi','kabupaten','kecamatan','kelurahan') == "NQ"))\
+                                                | ((F.coalesce('subs_id','cust_type_desc','cust_subtype_desc','l4_name','l3_name','l2_name','l1_name','lacci_id','lacci_closing_flag','lac','ci','node_type','area_name','region_sales','branch','subbranch','cluster_sales','provinsi','kabupaten','kecamatan','kelurahan') == "-99")), 'YES').otherwise('NO'))
 
 # SPLIT FILTER
-df_hasilGOOD = df_statusREJECT.filter(col('status_reject')  == 'NO')\
+df_hasilGOOD = df_statusREJECT.filter(col('status_reject') == 'NO')\
                     .select('activation_timestamp','trx_date','trx_hour','msisdn','subs_id','cust_type_desc','cust_subtype_desc','bss_order_id','plan_id','plan_name','topping_id','topping_name','plan_price','payment_timestamp','offer_id','l4_name','l3_name','l2_name','l1_name','payment_channel','cell_id','lacci_id','lacci_closing_flag','lac','ci','node_type','area_name','region_sales','branch','subbranch','cluster_sales','provinsi','kabupaten','kecamatan','kelurahan','indicator_4g','future_string_1','future_string_2','future_string_3','brand','site_name','file_id','load_ts','load_user','pre_post_flag','event_date','future_string_4','future_string_5','future_string_6','future_string_7','future_string_8','future_string_9','future_string_10')\
                     .write.mode('overwrite').saveAsTable("output.sa_payj_good")
 df_hasilREJECT = df_statusREJECT.filter(col('status_reject') == 'YES').write.mode('overwrite').saveAsTable("output.sa_payj_reject") 
@@ -118,6 +118,5 @@ f.writelines('\nDURATION={}'.format(duration))
 f.writelines('\nINPUT_COUNT={}'.format(dfPAYJ1.count()))
 f.writelines('\nOUTPUT1_COUNT={}'.format(df_hasilGOOD.count()))
 f.writelines('\nOUTPUT1=2_COUNT={}'.format(df_hasilREJECT.count()))
-f.close()   
-        
+f.close()
 

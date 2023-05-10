@@ -40,7 +40,7 @@ PAYJ_Part1= df_PAYJ.withColumn('filename', lit("PAYJ_JKT_Pre_20221220235959_0000
             .withColumn('sbstr_11_17', F.regexp_replace('x1', r'^0', ''))\
             .withColumn('sbstr_17_end', F.regexp_replace('x2', r'^0', ''))\
             .withColumn('sbstr_6_10', F.regexp_replace('x3', r'^0', ''))\
-            .withColumn('sbstr_10_end', F.regexp_replace('x4', r'^0', ''))
+            .withColumn('sbstr_10_end', F.regexp_replace('x4', r'^0', ''))\
             .withColumn('c1',F.concat(F.col('sbstr_11_17'),F.lit('_'), F.col('sbstr_17_end')))\
             .withColumn('c2',F.concat(F.col('sbstr_6_10'),F.lit('_'), F.col('sbstr_10_end')))\
             .withColumn('cell_id', 
