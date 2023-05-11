@@ -68,8 +68,8 @@ f.writelines('\nSTART_DATE={}'.format(start_date.strftime('%Y-%m-%d %H:%M:%S')))
 f.writelines('\nEND_DATE={}'.format(end_date.strftime('%Y-%m-%d %H:%M:%S')))
 f.writelines('\nDURATION={}'.format(duration))
 f.writelines('\nINPUT_COUNT={}'.format(df_SAOPAD.count()))
-f.writelines('\nOUTPUT1_COUNT={}'.format(df_GOOD.count()))
-f.writelines('\nOUTPUT2_COUNT={}'.format(df_REJECT.count()))
+f.writelines('\nOUTPUT_GOOD_COUNT={}'.format(df_GOOD.count()))
+f.writelines('\nOUTPUT_REJECT_COUNT={}'.format(df_REJECT.count()))
 f.close()    
 
 
